@@ -18,12 +18,29 @@ export class DatabaseConnection {
     
   }
 
+  async insert(table, document) {
+    var collection = this.database.collection(table);
 
+    var insertPromise = collection.insertOne(document);
+    
+    var insertedId = await insertPromise.then(function (result) {
+      var insertedId = result.insertedId;
+
+      return insertedId;
+
+      
+    })
+
+    var query = {_id: insertedId}
+
+    return this.findOne(table, query);
+    
+  }
 
   async find(table, query) {
     var collection = this.database.collection(table);
     
-    var documents = await collection.find(query);
+    var documents = await collection.find(query).toArray();
 
     return documents;
   }
@@ -37,20 +54,12 @@ export class DatabaseConnection {
   }
 
   async connect() {
-    
-    if (this.client && this.client.isConnected()) {
-      console.log("already connected!");
-      return;
-      
-    }
-    console.log("connected!");
     this.client = new MongoClient(this.uri);
-    this.database = this.client.db('MyDBexample');
+    this.database = this.client.db('CMPS415_Project');
   }
 
   async close() {
-    this.connect();
-    console.log(this.client);
+    
     await this.client.close();
   }
 

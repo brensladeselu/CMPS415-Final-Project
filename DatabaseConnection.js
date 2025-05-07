@@ -53,6 +53,12 @@ export class DatabaseConnection {
     return document;
   }
 
+  async delete(table, id) {
+    var collection = this.database.collection(table);
+    
+    await collection.deleteOne();
+  }
+
   async connect() {
     this.client = new MongoClient(this.uri);
     this.database = this.client.db('CMPS415_Project');

@@ -50,16 +50,28 @@ app.get('/topics', function(req, res) {
     try {
       
       await databaseConnection.connect();
-      // Hardwired Query for a part that has partID '12345'
-      // const query = { partID: '12345' };
-      // But we will use the parameter provided with the route
-      const query = {};
-  
-  
-  
+      
+
+      var query = {};
+
       const topics = await databaseConnection.find("topics", query);
       
-      res.render('Topics', { topics });
+
+      var query = {user_id: new ObjectId("681ab0f7df03cac7b065e9f6")};
+
+      const subscriptions = await databaseConnection.find("subscribedTopics");
+
+      var ids = [];
+
+      subscriptions.forEach(subscription => {
+        ids.push(subscription.topic_id);
+      });
+
+      var query = {_id: {$in: ids}};
+
+      var subscribedTopics = await databaseConnection.find("topics", query);
+
+      res.render('Topics', { subscribedTopics, topics });
       
   
     } finally {
@@ -91,6 +103,43 @@ app.post('/topics/add', function(req, res) {
 
       await databaseConnection.insert("subscribedTopics", newSubscribedTopic);
 
+
+      res.redirect("/topics");
+  
+    } finally {
+      // Ensures that the client will close when you finish/error
+      await databaseConnection.close();
+    }
+  }
+  run().catch(console.dir);
+})
+
+app.post('/topic/:id/subscribe', function(req, res) {
+  
+  var databaseConnection = new DatabaseConnection();
+
+  
+
+  async function run() {
+    try {
+      
+      await databaseConnection.connect();
+      
+      
+      var query = { topic_id: new ObjectId(req.params.id), user_id: new ObjectId("681ab0f7df03cac7b065e9f6")}
+
+      var active = await databaseConnection.findOne("subscribedTopics", query);
+
+      
+      if (active) {
+        await databaseConnection.delete("subscribedTopics", query);
+      }
+
+      else {
+        var newSubscribedTopic = { topic_id: new ObjectId(req.params.id), user_id: new ObjectId("681ab0f7df03cac7b065e9f6")}
+
+        await databaseConnection.insert("subscribedTopics", newSubscribedTopic);
+      }
 
       res.redirect("/topics");
   

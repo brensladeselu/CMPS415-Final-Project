@@ -13,11 +13,23 @@
         crossorigin="anonymous"></script>
 </head>
 
+<h1>Subscribed Topics</h1>
+<% subscribedTopics.forEach(function(subscribedTopic) { %>
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+          <h5 class="card-title text-primary"><%= subscribedTopic.name %></h5>
+          <a href="/topic/<%= subscribedTopic._id %>" class="stretched-link"></a>
+        </div>
+    </div>
+<% }); %> 
+
+
+<h1>All Topics</h1>
 <% topics.forEach(function(topic) { %>
-    <div class="card" href="bruh" style="width: 18rem;">
+    <div class="card" style="width: 18rem;">
         <div class="card-body">
           <h5 class="card-title text-primary"><%= topic.name %></h5>
-          <a href="topic/<%= topic._id %>" class="stretched-link"></a>
+          <a href="/topic/<%= topic._id %>" class="stretched-link"></a>
         </div>
     </div>
 <% }); %> 

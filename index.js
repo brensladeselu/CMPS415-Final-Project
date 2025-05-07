@@ -1,24 +1,34 @@
 import { DatabaseConnection } from "./DatabaseConnection.js";
-
+var loginController = import("./controllers/LoginController.js");
 
 
 
 // --- This is the standard stuff to get it to work on the browser
-import express from "express";
+import express from 'express';
+const path = import('path');
 const app = express();
+import bodyParser from 'body-parser';
+
 const port = 3000;
+
+
+
+
 app.listen(port);
 console.log('Server started at http://localhost:' + port);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+
+//middlewares
+app.set('view engine','ejs');
+app.use(bodyParser.urlencoded({extended:true}));
+
+
 // routes will go here
 
-// Default route:
-app.get('/', function(req, res) {
-  res.send('Starting... ');
-});
+app.use("/", loginController);
 
 app.get('/say/:name', function(req, res) {
   res.send('Hello ' + req.params.name + '!');
